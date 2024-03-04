@@ -1,6 +1,7 @@
 package com.sds.project0304.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -32,10 +33,15 @@ public class LoginForm {
 		TextField t_pass=new TextField();
 		
 		//각 컴포넌트들의 스타일 적용
-		la_id.setPreferredSize(new Dimension(120, 35));
-		t_id.setPreferredSize(new Dimension(120, 35));
-		la_pass.setPreferredSize(new Dimension(120, 35));
-		t_pass.setPreferredSize(new Dimension(120, 35));
+		la_id.setPreferredSize(new Dimension(120, 30));
+		t_id.setPreferredSize(new Dimension(120, 30));
+		la_pass.setPreferredSize(new Dimension(120, 30));
+		t_pass.setPreferredSize(new Dimension(120, 30));
+		
+		//footer에 부착할 버튼 2개 생성 및 스타일 적용
+		Button bt_login = new Button("Login");//로그인 버튼
+		Button bt_join = new Button("Join");//가입 버튼
+		
 		
 		//생성된 컴포넌트 4개를 content  판자에 자식으로 부착하자 		
 		content.add(la_id);
@@ -43,7 +49,10 @@ public class LoginForm {
 		content.add(la_pass);
 		content.add(t_pass);
 		
-		
+		//생성된 버튼 2개를 footer의 자식을 부착하자
+		//footer는 개발자가 아무런 배치를 적용한 적이 없으므로 flowLayout이다
+		footer.add(bt_login);
+		footer.add(bt_join);
 		
 		//content 는 윈도우의 센터에 부착
 		frame.add(content, BorderLayout.CENTER);
@@ -51,7 +60,7 @@ public class LoginForm {
 		//footer는 윈도우의 남쪽에 부착
 		frame.add(footer, BorderLayout.SOUTH);
 		
-		frame.setSize(300, 130);
+		frame.setSize(300, 150);
 		frame.setVisible(true);
 		
 	}
