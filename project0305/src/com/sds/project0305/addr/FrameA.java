@@ -28,17 +28,17 @@ public class FrameA extends Frame {
 		}
 		
 		//열기 버튼과 리스너연결 
-		BtnListener btListener = new BtnListener(this);
-		bt_open.addActionListener(btListener);
+		Btnlistener btlistener = new Btnlistener(this);
+		bt_open.addActionlistener(btlistener);
 		
 		//7개의 버튼과 리스너 연결 
-		bt_color[0].addActionListener(btListener);
-		bt_color[1].addActionListener(btListener);
-		bt_color[2].addActionListener(btListener);
-		bt_color[3].addActionListener(btListener);
-		bt_color[4].addActionListener(btListener);
-		bt_color[5].addActionListener(btListener);
-		bt_color[6].addActionListener(btListener);
+		bt_color[0].addActionlistener(btlistener);
+		bt_color[1].addActionlistener(btlistener);
+		bt_color[2].addActionlistener(btlistener);
+		bt_color[3].addActionlistener(btlistener);
+		bt_color[4].addActionlistener(btlistener);
+		bt_color[5].addActionlistener(btlistener);
+		bt_color[6].addActionlistener(btlistener);
 		
 		this.setSize(300,400);
 		this.setVisible(true);

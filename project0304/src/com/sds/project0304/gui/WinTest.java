@@ -1,7 +1,7 @@
 package com.sds.project0304.gui;
 
 import java.awt.Button;
-import java.awt.Checkbox;
+import java.awt.JCheckbox;
 import java.awt.Choice;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -60,8 +60,8 @@ public class WinTest {
 		ch.add("jsp");
 		ch.add("spring");
 		
-		//html에서의 checkbox는 java에서도 checkbox라 함
-		Checkbox box = new Checkbox("여행");
+		//html에서의 JCheckbox는 java에서도 JCheckbox라 함
+		JCheckbox box = new JCheckbox("여행");
 		
 		frame.add(bt); //버튼을 윈도우에 부착
 		frame.add(t1); //텍스트 필드를 윈도우에 부착 

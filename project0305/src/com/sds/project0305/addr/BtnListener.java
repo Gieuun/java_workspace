@@ -2,17 +2,17 @@ package com.sds.project0305.addr;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.Actionlistener;
 
 //사용자의 액션이벤트를 감지할 리스너 클래스 정의 
-public class BtnListener implements ActionListener{
+public class Btnlistener implements Actionlistener{
 	FrameA frameA;//이 객체의 인스턴스가 소멸할때까지 살아있슴
 	FrameB frameb; //null
 	
 	//FrameA 를 전달받을 수 있는 생성자를 정의하자 
 	//아래의 생성자 메서드를 호출하는 자는 반드시 FrameA 형인
 	//인스턴스를 넘겨야 한다..
-	public BtnListener(FrameA frameA) {
+	public Btnlistener(FrameA frameA) {
 		this.frameA = frameA;
 	}
 	

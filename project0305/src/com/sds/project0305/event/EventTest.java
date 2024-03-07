@@ -36,17 +36,17 @@ public class EventTest extends Frame {
 		add(t);	//프레임에 텍스트박스 부착
 		add(ch); //프레임에 섹렉트박스 부착
 		//버튼에 리스너 연결(js와 상당히 흡사)
-		myActionListener my = new myActionListener();
-		btn.addActionListener(my); //리스너 객체의 인스턴스가 매개변수로 전달되어야 한다
+		myActionlistener my = new myActionlistener();
+		btn.addActionlistener(my); //리스너 객체의 인스턴스가 매개변수로 전달되어야 한다
 		
 		//텍스트 필드에 키보드 이벤트 리스너 연결
-		t.addKeyListener(new MYkeyLIstener());
+		t.addKeylistener(new MYkeylistener());
 		
 		//초이스에 아이템 변경 리스너 연결
-		ch.addItemListener(new MyItmeListener());
+		ch.addItemlistener(new MyItmelistener());
 		
 		//현재 프레임에 윈도우 리스너 연결
-		this.addWindowListener(new MyWindowListener());
+		this.addWindowlistener(new MyWindowlistener());
 		
 		setBackground(Color.DARK_GRAY);
 		setSize(300,400); //윈도우창 크기 지정

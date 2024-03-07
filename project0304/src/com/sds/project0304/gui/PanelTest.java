@@ -7,7 +7,7 @@ import java.awt.Frame;
 import java.awt.Panel;
 
 /*
- * 자바의 컴포넌트 중, Panel은 판자이며 다른 컴포넌트(버튼, Checkbox)는 다르게
+ * 자바의 컴포넌트 중, Panel은 판자이며 다른 컴포넌트(버튼, JCheckbox)는 다르게
  * 배치 능력을 보유하고 있다, 즉 배치관리자(borderlayou, grid, flow...)의 적용이 가능
  * 마치 웹브라우저라는 윈도우를 내부적으로 디자인 영역을 나눌때 쓰는 div와 비슷한 역할을 수행
  * div 와 마찬가지로 투명이다.

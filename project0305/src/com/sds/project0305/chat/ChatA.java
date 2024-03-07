@@ -8,11 +8,11 @@ import java.awt.Panel;
 import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.Actionlistener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.Keylistener;
 
-public class ChatA extends Frame implements ActionListener, KeyListener {
+public class ChatA extends Frame implements Actionlistener, Keylistener {
 
 	TextArea area; //html에서의 textarea와 동일
 	Panel p_south;
@@ -37,8 +37,8 @@ public class ChatA extends Frame implements ActionListener, KeyListener {
 		
 		add(p_south, BorderLayout.SOUTH); //Panel을 South에 부착
 		
-		bt.addActionListener(this); //내가 객체의 주체다
-		t.addKeyListener(this);
+		bt.addActionlistener(this); //내가 객체의 주체다
+		t.addKeylistener(this);
 		
 		setBounds(200,300, 300,400); //위치 + 너비 까지 지정 가능
 		setVisible(true);

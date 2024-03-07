@@ -8,9 +8,9 @@ import java.awt.Panel;
 import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.Keylistener;
 
-public class ChatB extends Frame implements KeyListener {
+public class ChatB extends Frame implements Keylistener {
 
 	TextArea area; //html에서의 textarea와 동일
 	Panel p_south;
@@ -34,7 +34,7 @@ public class ChatB extends Frame implements KeyListener {
 		add(p_south, BorderLayout.SOUTH); //Panel을 South에 부착
 		
 		//텍스트 필드와 리스너 연결
-		t.addKeyListener(this);
+		t.addKeylistener(this);
 		
 		setSize(300, 400);
 		setVisible(true);

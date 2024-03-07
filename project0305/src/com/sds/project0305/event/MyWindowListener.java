@@ -1,12 +1,12 @@
 package com.sds.project0305.event;
 
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.Windowlistener;
 
 //사용자가 프렝미창을 대상으로 각종 이벤트를 일으키면 발생하는 이벤트는 WindowEvent이고
-//이 WindowEvent를 실시간으로 청취하는 리스너가 바로 WindowListner이다
+//이 WindowEvent를 실시간으로 청취하는 리스너가 바로 Windowlistner이다
 //인터페이스이므로, 재정의 하자
-public class MyWindowListener implements WindowListener {
+public class MyWindowlistener implements Windowlistener {
 	//윈도우창이 사용중일때, 포커스가 현재 창에 올라올때 
 	public void windowActivated(WindowEvent e) {
 		System.out.println("windowActivated");

@@ -1,9 +1,9 @@
 package com.sds.project0305.event;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.Keylistener;
 
-public class MYkeyLIstener implements KeyListener{
+public class MYkeylistener implements Keylistener{
 
 	//키보드 누를때 호출되는 메서드
 	public void keyPressed(KeyEvent e) {
