@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -33,9 +34,13 @@ public class MemoApp extends JFrame implements ActionListener {
 	JMenuItem[] item = new JMenuItem[itemTitle.length];
 	JTextArea area;
 	JScrollPane scroll;
+	
+	File file; //지금 열어놓은 파일
 	FileInputStream fis; // 바이트 기반 스트림 (1byte씩 만 이해하므로 영문만 이해)
 	InputStreamReader reader;
 	BufferedReader buffr;
+	
+	FileWriter fw; //문자기반의 출력스트림 
 
 	// 자바에서는 파일 탐색기를 가리켜 JFileChooser
 	JFileChooser chooser;
@@ -77,7 +82,7 @@ public class MemoApp extends JFrame implements ActionListener {
 
 		// 스크롤을 적용하고 싶은 컴포넌트를 생성자의 인스로 넣어줘야 함
 		scroll = new JScrollPane(area = new JTextArea());
-		area.setFont(new Font("맑음 고딕", Font.BOLD, 12)); // area의 폰트 크기 조정
+		area.setFont(new Font("맑음 고딕", Font.BOLD, 25)); // area의 폰트 크기 조정
 
 		// 조립
 		add(scroll);
@@ -102,32 +107,29 @@ public class MemoApp extends JFrame implements ActionListener {
 			// 유저가 선택한 파일이 무엇인지 파악?
 
 			// 유저가 선택한 파일의 정보를 File 클래스의 인스턴스로 반환
-			File file = chooser.getSelectedFile();
+			file = chooser.getSelectedFile();
 			System.out.println("유저가 선택한 파일" + file);
 
 			// 얻어진 File 정보를 이용하여, 입력스트림을 메모리에 올리자(즉 빨대 꽂자)
 			try {
 				fis = new FileInputStream(file);// 파일객체를 이용한 스트림
 				reader = new InputStreamReader(fis); // 빨대 덧 씌우기
-				buffr = new BufferedReader(reader); //버퍼 빨대 덧 씌우기
-				
+				buffr = new BufferedReader(reader);//버퍼 빨대 덧 씌우기
+
 				// 파일 스트림을 이용하여 바이트 단위로 마구 마구 읽어서 area 에 출력
 				//int data = -1;
-				String data = null;
-				int count = 0;
-				
+				String data=null;
+				int count=0;
 				while (true) {
 					// data = fis.read(); //1byte 읽어들임
 					//data = reader.read(); // 1 문자를 읽어들임
 					data = buffr.readLine();
 					count++;
-					if (data == null)
-						break; // 파일의 끝에 도달하면 루프 종료
-					//area.append("" + (char) data); // 문서 파일의 데이터를 읽었으므로, char 형으로 변환가능
-					area.append(""+data+"\n"); // 한줄씩 빨아들인 데이터를 메모장에 부착
+					if (data == null)break; // 파일의 끝에 도달하면 루프 종료
+					area.append("" + data+"\n"); // 문서 파일의 데이터를 읽었으므로 출력
 				}
-				//윈도우 창의 제목에 읽어들인 횟수 출력
-				setTitle("읽어들인 횟수?"+count);
+				this.setTitle("읽어들인 횟수는 "+count);//윈도우 창의 제목에 읽어들인 횟수 출력
+				
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -159,12 +161,35 @@ public class MemoApp extends JFrame implements ActionListener {
 		}
 	}
 
+	//파일저장 
+	public void saveFile() {
+		//열어놓은파일을 대상으로 출력스트림 꽂자!!
+		try {
+			fw = new FileWriter(file);
+			fw.write(area.getText());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			if(fw !=null) {
+				try {
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		/* 이벤트를 일으킨 컴포넌트를 이벤트 소스(source)라 한다. e객체로부터 이벤트 소스를 얻자 */
 		Object obj = e.getSource();
 
-		if (obj == item[2]) {
+		if (obj == item[2]) { //누른 버튼이 열기 버튼이었다면
 			openFile();
+		}else if(obj == item[3]) { //누른 버튼이 저장 버튼이었다면
+			saveFile();
+		}else if(obj == item[7]) { //누른 버튼이 끝내기 버튼이었다면
+			System.exit(0);
 		}
 
 	}

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /*
+나는 스트림이 재밌다
  * 우리가 지금까지 사용했던 FileInputStream 은 스트림의 분류 중 데이터 처리 단위를 기준으로 보면
  * byte 기반의 스트림이라 한다.. 즉 읽고 쓸때 1 byte 씩 처리한다 
  * 파일복사와 같은 업무를 수행할때는 아무런 문제가 발생X 
