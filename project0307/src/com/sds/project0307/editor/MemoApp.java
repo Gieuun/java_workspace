@@ -3,6 +3,7 @@ package com.sds.project0307.editor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,6 +35,7 @@ public class MemoApp extends JFrame implements ActionListener {
 	JScrollPane scroll;
 	FileInputStream fis; // 바이트 기반 스트림 (1byte씩 만 이해하므로 영문만 이해)
 	InputStreamReader reader;
+	BufferedReader buffr;
 
 	// 자바에서는 파일 탐색기를 가리켜 JFileChooser
 	JFileChooser chooser;
@@ -107,23 +109,37 @@ public class MemoApp extends JFrame implements ActionListener {
 			try {
 				fis = new FileInputStream(file);// 파일객체를 이용한 스트림
 				reader = new InputStreamReader(fis); // 빨대 덧 씌우기
-
+				buffr = new BufferedReader(reader); //버퍼 빨대 덧 씌우기
+				
 				// 파일 스트림을 이용하여 바이트 단위로 마구 마구 읽어서 area 에 출력
-				int data = -1;
-
+				//int data = -1;
+				String data = null;
+				int count = 0;
+				
 				while (true) {
 					// data = fis.read(); //1byte 읽어들임
-					data = reader.read(); // 1 문자를 읽어들임
-					if (data == -1)
+					//data = reader.read(); // 1 문자를 읽어들임
+					data = buffr.readLine();
+					count++;
+					if (data == null)
 						break; // 파일의 끝에 도달하면 루프 종료
-					area.append("" + (char) data); // 문서 파일의 데이터를 읽었으므로, char 형으로 변환가능
+					//area.append("" + (char) data); // 문서 파일의 데이터를 읽었으므로, char 형으로 변환가능
+					area.append(""+data+"\n"); // 한줄씩 빨아들인 데이터를 메모장에 부착
 				}
-
+				//윈도우 창의 제목에 읽어들인 횟수 출력
+				setTitle("읽어들인 횟수?"+count);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
+				if (buffr != null) {
+					try {
+						buffr.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 				if (reader != null) {
 					try {
 						reader.close();
