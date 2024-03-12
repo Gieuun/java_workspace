@@ -129,6 +129,10 @@ public class CarSelect extends JFrame {
 			// 오라클의 표를 담고 있는 인터페이스 -> ResultSet
 			ResultSet rs = pstmt.executeQuery();
 
+			// DB에 있는 레코드를 가져오기 전에 기존의 list에 담겨져 있었던 제거하고 다시 불러오기
+			//갱신
+			model.list.removeAll(model.list);
+			
 			// rs 는 최초에는 아무런 열도 가리키고 있지 않으며 첫번째 레코드 바로 위
 			while (rs.next()) { // 한칸 전진
 				// 비어 있는 3개 짜리 스트칭 배여을 만들어서, 하나의 층에 있는 레코드를 담자
