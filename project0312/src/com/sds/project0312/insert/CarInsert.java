@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.sql.Connection;
@@ -80,7 +81,7 @@ public class CarInsert extends JFrame {
 		});
 
 		// 현재 창에 윈도우 리스너 연결
-		this.addWindowListener(new WindowListener() {
+		this.addWindowListener(new WindowAdapter() {
 			// 이벤트 관련 Listener를 구현한 객체들을가리켜 어댑터라 한다.
 			// 어댑터는 인터페이싀 추상메서드를 재정의 해놓았으므로, 우리가 그중 원하는 것만
 			// 오버라이드하여 사용하면된다
@@ -95,42 +96,6 @@ public class CarInsert extends JFrame {
 				}
 				// 현재 프로세스도 종료
 				System.exit(0);
-			}
-
-			@Override
-			public void windowOpened(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowClosed(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowActivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		// 윈도우 설정
