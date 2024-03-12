@@ -116,8 +116,9 @@ public class CarSelect extends JFrame {
 	// 원격지에 연결된 데이터베이스 접속 정보는 Connection 객체를 이용하여,
 	// 쿼리문 객체를 생성한 후, 네트워크 select 쿼리를 전송하고, 그 결과도 가져오자
 	public void load() {
+		//아래의 두 객체를 밖으로 빼놔야 finally에서 닫을 수 있다
 		java.sql.PreparedStatement pstmt = null;
-
+		ResultSet rs = null;
 		// 접속이 된 이후에나 쿼리를 실핼 할 수 있으므로,connection 객체로부터 얻어올수 잇다
 		String sql = "select * from car order by car_idx asc";
 
@@ -127,7 +128,7 @@ public class CarSelect extends JFrame {
 			// DML인 경우 excuteUpdate() 메서드 사용하고. select문인 경우 executeQuery()
 
 			// 오라클의 표를 담고 있는 인터페이스 -> ResultSet
-			ResultSet rs = pstmt.executeQuery();
+			 rs = pstmt.executeQuery();
 
 			// DB에 있는 레코드를 가져오기 전에 기존의 list에 담겨져 있었던 제거하고 다시 불러오기
 			//갱신
@@ -155,6 +156,23 @@ public class CarSelect extends JFrame {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 
 	}
