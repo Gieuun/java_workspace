@@ -66,7 +66,7 @@ public class ShopMain extends JFrame {
 		pages[1] = new ProductList();
 		pages[2] = new AdminRegist();
 		pages[3] = new AdminList();
-		pages[4] = new Login();
+		pages[4] = new Login(this); //로그인 객체는 ShopMain 인스턴스 주소값을 원함니다
 
 		// 5 페이지를 center에 부착
 		for (int i = 0; i < pages.length; i++) {
@@ -74,7 +74,7 @@ public class ShopMain extends JFrame {
 		}
 
 		// 5페이지 중 누구를 default 화면으로할지 결정하는 코드
-		showHide(4); // login 페이지
+		showHide(pages.length-1); // 로그인인 마지막 페이지
 
 		// 프레임에 패널 부착
 		add(p_north, BorderLayout.NORTH);
