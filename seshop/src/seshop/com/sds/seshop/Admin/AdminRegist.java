@@ -40,6 +40,7 @@ public class AdminRegist extends Page {
 	JFileChooser chooser; // 파일 탐색기
 	Image image = null; // 최초에는 파일 선택을 안한 상태
 	String myName; // 등록 메서드에서도 접근하도록 멤버변수로 선언
+	File file;
 
 	public AdminRegist(ShopMain shopmain) {
 		super(Color.CYAN);
@@ -122,6 +123,7 @@ public class AdminRegist extends Page {
 		// 가입 버튼에 리스너 연결
 		bt_regist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				copy();
 				regist();
 			}
 		});
@@ -137,70 +139,75 @@ public class AdminRegist extends Page {
 	// 프로파일 열어서 이미지를 패널에 그리기
 	public void preview() {
 		int result = chooser.showOpenDialog(this);
-		if (result == JFileChooser.APPROVE_OPTION) { // 열기른 누르면
+
+		if (result == JFileChooser.APPROVE_OPTION) { // 열기 눌르면..
 			// 유저가 선택한 파일 알아맞추고, 그 이미지 파일을 이용하여 p_preview 패널에 그림을 그려보자
-			File file = chooser.getSelectedFile(); // 유저가 선택한 파일
+			file = chooser.getSelectedFile(); // 유저가 선택한 파일!!
 			String filename = file.getAbsolutePath(); // 현재 파일의 풀 하드 경로
 
-			// 선택한 파일로 부터 확장자 구하기
-			String ext = FileManager.getExt(filename);
+			System.out.println("당신이 선택한 파일명 " + filename);
+
+			// 선택한 파일로부터 확장자 구하기
+			String ext = FileManager.getExt(filename); // jpg
 
 			// 유일한 파일명으로 사용할 날짜 얻기
-			long time = System.currentTimeMillis(); // 밀리 sec 까지 시간 얻기
+			long time = System.currentTimeMillis(); // 밀리세턴드까지의 시간 얻기
 
-			// 파일명 조합
-			myName = time + "." + ext;
-
-			// 파일 입,출력
-			// 원본 파일인 filename과 연결된 입력스트림 연결,
-			// 바이트 데이터를 empty 파일에 myName으로 복사하자
-			FileInputStream fis = null; // 파일을 대상으로 한 바이트 기반의 입력 스트림
-			FileOutputStream fos = null;// 파일을 대상으로 한 바이트 기반의 출력 스트림
-
-			try {
-				fis = new FileInputStream(file); // 유저가 선택한 파일에 입력 스트림 꽂기
-
-				// 출력 스트림으로 복사할 대상
-				fos = new FileOutputStream("C:/Users/gieun/SeShop/" + myName);
-				System.out.println("스트림 생성 성공");
-
-				// 입력스트림을로부터 1byte씩 읽고, 다시 출력 스트림으로 1byte씩 내려 쓰자
-				int data = -1;
-
-				while (true) {
-					data = fis.read(); // 1byte 읽고 변수에 담기
-					if (data == -1)
-						break; // 파일에 끝에 다다르면 루프 중단
-					fos.write(data);
-				}
-				JOptionPane.showMessageDialog(this, "파일이 지정한 경로에 복사되었습니다.");
-
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				System.out.println("스트림 생성 실패");
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (fos != null) {
-					try {
-						fos.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				if (fis != null) {
-					try {
-						fis.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			myName = time + "." + ext;// 파일명 조합
+			System.out.println(myName);
 
 			ImageIcon icon = new ImageIcon(filename);
 			image = icon.getImage(); // 멤버변수인 image에 대입
-			// 미리보기 패널에게 다시 그릴 것을 명령
-			p_preview.repaint();
+			p_preview.repaint();// 미리보기 패널에게 다시 그릴 것을 명령
+		}
+	}
+
+	// 파일 복사
+	public void copy() {
+		// 원본 파일인 filename 과 연관된 입력스트림 연결하고, 바이트 데이터를 읽어서 마시면서
+		// 동시에 빈파일(empty) 새로운 이름의 파일에 내려쓰자(출력)!! = 파일복사
+		FileInputStream fis = null; // 파일을 대상으로 한 바이트 기반의 입력 스트림
+		FileOutputStream fos = null; // 파일을 대상으로 한 바이트 기반의 출력 스트림
+
+		try {
+			fis = new FileInputStream(file);// 유저가 선택한 파일에 입력 스트림 꽂기
+			// 출력스트림으로 복사할 대상..
+			fos = new FileOutputStream("C:/Users/gieun/SeShop/" + myName);
+			System.out.println("스트림 생성 성공");
+
+			// 입력스트림으로부터 1byte씩 읽고, 다시 출력스트림으로 1byte씩 내려 쓰자
+			int data = -1;
+
+			while (true) {
+				data = fis.read(); // 1byte 읽고 변수에 담기, 파일의 끝에 다다르면 -1을 반환..
+				if (data == -1)
+					break;// 파일에 끝에 다다르면 루프 중단
+				fos.write(data);
+			}
+
+			JOptionPane.showMessageDialog(this, "파일이 지정한 경로에 복사되었습니다");
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("스트림 생성 실패");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
 		}
 	}
 
