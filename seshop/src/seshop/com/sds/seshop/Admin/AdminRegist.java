@@ -7,6 +7,10 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
@@ -19,6 +23,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import seshop.com.sds.seshop.lib.EncryptionManager;
+import seshop.com.sds.seshop.lib.FileManager;
 import seshop.com.sds.seshop.main.Page;
 import seshop.com.sds.seshop.main.ShopMain;
 
@@ -34,6 +39,7 @@ public class AdminRegist extends Page {
 	JButton bt_regist, bt_login;
 	JFileChooser chooser; // 파일 탐색기
 	Image image = null; // 최초에는 파일 선택을 안한 상태
+	String myName; // 등록 메서드에서도 접근하도록 멤버변수로 선언
 
 	public AdminRegist(ShopMain shopmain) {
 		super(Color.CYAN);
@@ -59,11 +65,11 @@ public class AdminRegist extends Page {
 				g.setColor(Color.GRAY);
 				g.fillRect(0, 0, 280, 280);
 
-				if (image == null) { //아직 이미지를 선택하지 않았다면 문구
+				if (image == null) { // 아직 이미지를 선택하지 않았다면 문구
 					g.setColor(Color.WHITE);
 					g.drawString("파일 선택", 40, 40);
-				}else { //이미 객체가 채워져 있다면 그림을 출력
-					g.drawImage(image, 0, 0, 280, 280, p_preview);					
+				} else { // 이미 객체가 채워져 있다면 그림을 출력
+					g.drawImage(image, 0, 0, 280, 280, p_preview);
 				}
 			}
 		};
@@ -134,10 +140,66 @@ public class AdminRegist extends Page {
 		if (result == JFileChooser.APPROVE_OPTION) { // 열기른 누르면
 			// 유저가 선택한 파일 알아맞추고, 그 이미지 파일을 이용하여 p_preview 패널에 그림을 그려보자
 			File file = chooser.getSelectedFile(); // 유저가 선택한 파일
-			String filename = file.getAbsolutePath(); //현재 파일의 풀 하드 경로
+			String filename = file.getAbsolutePath(); // 현재 파일의 풀 하드 경로
+
+			// 선택한 파일로 부터 확장자 구하기
+			String ext = FileManager.getExt(filename);
+
+			// 유일한 파일명으로 사용할 날짜 얻기
+			long time = System.currentTimeMillis(); // 밀리 sec 까지 시간 얻기
+
+			// 파일명 조합
+			myName = time + "." + ext;
+
+			// 파일 입,출력
+			// 원본 파일인 filename과 연결된 입력스트림 연결,
+			// 바이트 데이터를 empty 파일에 myName으로 복사하자
+			FileInputStream fis = null; // 파일을 대상으로 한 바이트 기반의 입력 스트림
+			FileOutputStream fos = null;// 파일을 대상으로 한 바이트 기반의 출력 스트림
+
+			try {
+				fis = new FileInputStream(file); // 유저가 선택한 파일에 입력 스트림 꽂기
+
+				// 출력 스트림으로 복사할 대상
+				fos = new FileOutputStream("C:/Users/gieun/SeShop/" + myName);
+				System.out.println("스트림 생성 성공");
+
+				// 입력스트림을로부터 1byte씩 읽고, 다시 출력 스트림으로 1byte씩 내려 쓰자
+				int data = -1;
+
+				while (true) {
+					data = fis.read(); // 1byte 읽고 변수에 담기
+					if (data == -1)
+						break; // 파일에 끝에 다다르면 루프 중단
+					fos.write(data);
+				}
+				JOptionPane.showMessageDialog(this, "파일이 지정한 경로에 복사되었습니다.");
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				System.out.println("스트림 생성 실패");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (fos != null) {
+					try {
+						fos.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				if (fis != null) {
+					try {
+						fis.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
 			ImageIcon icon = new ImageIcon(filename);
-			image=icon.getImage(); //멤버변수인 image에 대입
-			//미리보기 패널에게 다시 그릴 것을 명령
+			image = icon.getImage(); // 멤버변수인 image에 대입
+			// 미리보기 패널에게 다시 그릴 것을 명령
 			p_preview.repaint();
 		}
 	}
@@ -154,7 +216,7 @@ public class AdminRegist extends Page {
 			String id = t_id.getText(); // 텍스트 필드에서 사용자가 입력한 id
 			String pass = new String(t_pass.getPassword()); // pass
 			String email = t_email.getText(); // email
-			String filename = "123123.png"; // 사용자가 선택한 사진의 파일이름
+			String filename = myName; // 사용자가 선택한 사진의 파일이름
 
 			pass = EncryptionManager.getConvertedData(pass);
 

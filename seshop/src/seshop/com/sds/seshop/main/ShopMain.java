@@ -102,8 +102,6 @@ public class ShopMain extends JFrame {
 		for (int i = 0; i < btn.size(); i++) {
 			btn.get(i).addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("당신이 누른 버튼의 배열의 index는" + btn.indexOf(e.getSource()));
-
 					showHide(btn.indexOf(e.getSource()));
 				}
 			});
