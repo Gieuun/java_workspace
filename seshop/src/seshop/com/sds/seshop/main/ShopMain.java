@@ -9,6 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -37,12 +40,12 @@ public class ShopMain extends JFrame {
 
 	JPanel p_center; // 교체될 페이지들이 붙은 컨테이너(삼품등록, 상품목록, 관리자명단, 관리자등록, 로그인폼)
 
-	// 페이지
-	ProductRegist productRegist;
-	ProductList productList;
-	AdminRegist adminRegist;
-	AdminList adminList;
-	Login login;
+	String dirver = "oracle.jdbc.driver.OracleDriver";
+	String url = "jdbc:oracle:thin:@localhost:1521:XE";
+	String user = "shop";
+	String pass = "1234";
+
+	public Connection con = null; // 접속한 이후 그 정보를 가진 객체, 정보를 가지고 있으므로 추후 접속 해제 까지 가능
 
 	public ShopMain() {
 		p_north = new JPanel();
@@ -64,9 +67,9 @@ public class ShopMain extends JFrame {
 		// 5 페이지 생성
 		pages[0] = new ProductRegist();
 		pages[1] = new ProductList();
-		pages[2] = new AdminRegist();
-		pages[3] = new AdminList();
-		pages[4] = new Login(this); //로그인 객체는 ShopMain 인스턴스 주소값을 원함니다
+		pages[2] = new AdminList();
+		pages[3] = new AdminRegist(this);
+		pages[4] = new Login(this); // 로그인 객체는 ShopMain 인스턴스 주소값을 원함니다
 
 		// 5 페이지를 center에 부착
 		for (int i = 0; i < pages.length; i++) {
@@ -74,7 +77,7 @@ public class ShopMain extends JFrame {
 		}
 
 		// 5페이지 중 누구를 default 화면으로할지 결정하는 코드
-		showHide(pages.length-1); // 로그인인 마지막 페이지
+		showHide(pages.length - 1); // 로그인인 마지막 페이지
 
 		// 프레임에 패널 부착
 		add(p_north, BorderLayout.NORTH);
@@ -83,6 +86,14 @@ public class ShopMain extends JFrame {
 		// 윈도우 어댑터를 익명으로 연결
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
+				// DB 커넥션 닫을 예정
+				if (con != null) {
+					try {
+						con.close();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+				}
 				System.exit(0);
 			}
 		});
@@ -101,6 +112,9 @@ public class ShopMain extends JFrame {
 		// 윈도우설정
 		setSize(1000, 850);
 		setVisible(true);
+
+		// 오라클 접속 시도
+		connect();
 	}
 
 	// 5페이지 중 어느 페이지를 보여줘야 할지를 경정짓는 메서드
@@ -126,6 +140,33 @@ public class ShopMain extends JFrame {
 		image = image.getScaledInstance(100, 90, Image.SCALE_SMOOTH);
 
 		return new ImageIcon(image); // 변환시킨 이미지를 다시 이미지아이콘으로 변환하여 반환
+	}
+
+	// 오라클 접속
+	public void connect() {
+		setTitle("접속 시도중...");
+
+		try {
+			Class.forName(dirver);
+
+			// 접속
+			// 접속이 성공하게 되면 con은 더이상 null이 아님
+			con = DriverManager.getConnection(url, user, pass);
+			if (con == null) {
+				setTitle("접속 실패");
+			} else {
+				setTitle("오라클 연결 됨");
+			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			setTitle("드라이버를 확인해주세요");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		setTitle("오라클 연결 됨");
 	}
 
 	public static void main(String[] args) {

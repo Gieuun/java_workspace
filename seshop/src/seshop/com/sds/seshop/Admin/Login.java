@@ -16,17 +16,15 @@ import seshop.com.sds.seshop.main.ShopMain;
 
 //관리자 로그인 페이지
 public class Login extends Page{
-	JPanel container;
 	JLabel la_id, la_pass;
 	JTextField t_id; 
 	JPasswordField t_pass;
 	JButton bt_regist, bt_login;
 	
-	ShopMain shopmain;
 	
 	public Login(ShopMain shopmain) {
 		super(Color.MAGENTA);
-		this.shopmain= shopmain;
+		this.shopmain= shopmain; //기존에 있던 shop main 
 		
 		//생성
 		container = new JPanel();
@@ -38,14 +36,14 @@ public class Login extends Page{
 		bt_regist = new JButton("관리자 가입");
 		
 		//스타일
-		container.setPreferredSize(new Dimension(600, 250));
+		container.setPreferredSize(new Dimension(600, 400));
 		container.setBackground(Color.CYAN);
 		
 		Dimension d = new Dimension(280, 40);
 		la_id.setPreferredSize(d);
 		t_id.setPreferredSize(d);
 		la_pass.setPreferredSize(d);
-		t_pass.setPreferredSize(d);
+		t_pass.setPreferredSize(d); 
 		
 		//조립
 		add(container);
