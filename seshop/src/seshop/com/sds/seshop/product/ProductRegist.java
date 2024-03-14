@@ -2,6 +2,8 @@ package seshop.com.sds.seshop.product;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -9,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
+
+import com.mysql.jdbc.PreparedStatement;
 
 import seshop.com.sds.seshop.main.Page;
 import seshop.com.sds.seshop.main.ShopMain;
@@ -110,8 +114,42 @@ public class ProductRegist extends Page {
 	}
 
 	public void getTopCategory() {
-		//콤보박스에 최상위 카테고리를 넣어주기
+		//콤보박스에 최상위 카테고리를 넣어주기 
+		java.sql.PreparedStatement pstmt=null; //닫으려고..try문 밖에 선언
+		ResultSet rs=null; //닫으려고..try문 밖에 선언 
+	
+		
+		try {
+			pstmt=shopmain.con.prepareStatement("select * from topcategory"); //쿼리 준비 객체 생성 
+			
+			//실행 : DmL-executeUpdate(), select-executeQuery() 실행 후 ResultSet 반환
+			rs = pstmt.executeQuery(); //select 문 전송~~후 결과 표 받기
+			
+			while(rs.next()) { //next() 메서드가 참을 반환하는 동안, 커서  전진 
+				b_top.addItem(rs.getString("topname"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
 		
 	}
-
+	
 }
