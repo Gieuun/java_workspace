@@ -46,8 +46,12 @@ public class ShopMain extends JFrame {
 	String pass = "1234";
 
 	public Connection con = null; // 접속한 이후 그 정보를 가진 객체, 정보를 가지고 있으므로 추후 접속 해제 까지 가능
+	public boolean loginflag = false; // 로그인 여부를 판단해주는 멤버 변수
 
 	public ShopMain() {
+		// 오라클 접속 시도
+		connect(); //접속 시도를 페이지 보다 윗 시점으로 
+		
 		p_north = new JPanel();
 
 		Dimension d = new Dimension(70, 60);
@@ -63,11 +67,11 @@ public class ShopMain extends JFrame {
 		// 센터 프레임 생성
 		p_center = new JPanel();
 		p_center.setBackground(Color.gray);
-
+		
 		// 5 페이지 생성
-		pages[0] = new ProductRegist();
-		pages[1] = new ProductList();
-		pages[2] = new AdminList();
+		pages[0] = new ProductRegist(this);
+		pages[1] = new ProductList(this);
+		pages[2] = new AdminList(this);
 		pages[3] = new AdminRegist(this);
 		pages[4] = new Login(this); // 로그인 객체는 ShopMain 인스턴스 주소값을 원함니다
 
@@ -111,8 +115,6 @@ public class ShopMain extends JFrame {
 		setSize(1000, 850);
 		setVisible(true);
 
-		// 오라클 접속 시도
-		connect();
 	}
 
 	// 5페이지 중 어느 페이지를 보여줘야 할지를 경정짓는 메서드
@@ -138,6 +140,17 @@ public class ShopMain extends JFrame {
 		image = image.getScaledInstance(100, 90, Image.SCALE_SMOOTH);
 
 		return new ImageIcon(image); // 변환시킨 이미지를 다시 이미지아이콘으로 변환하여 반환
+	}
+
+	// 제목창 관리 메서드 정의
+	public void setCurrentTitle(String id) {
+		if (loginflag) {
+			// 로그인 성공시의 메시지
+			setTitle("오라클 연동 여부 - " + id + "님 로그인 중");
+		} else {
+			// 로그인 실패시의 메시지
+			setTitle("오라클 연동 여부 - 로그인해 주세요");
+		}
 	}
 
 	// 오라클 접속
