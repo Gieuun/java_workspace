@@ -2,6 +2,8 @@ package seshop.com.sds.seshop.product;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -18,10 +20,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
@@ -45,6 +47,8 @@ public class ProductRegist extends Page {
 	ArrayList<Integer> topIdxList = new ArrayList<Integer>();
 	
 	Thread thread;// 다운로드 프로그레스 바를 제어할 쓰레드
+	
+	Image img; //미리보기 패널이 그려야할 이미지. 현재는 null
 	
 	public ProductRegist(ShopMain shopmain) {
 		super(Color.CYAN);
@@ -78,9 +82,11 @@ public class ProductRegist extends Page {
 		bt_list = new JButton("상품 목록");
 
 		bar = new JProgressBar();
-		p_preview = new JPanel();
-		
-		//쓰레드 생성
+		p_preview  = new JPanel() {
+			public void paint(Graphics g) {
+				g.drawImage(img, 0, 0, 280, 280, container);
+			}
+		}; //페인트 메서드 재정의
 		
 		// 스타일
 		Dimension d = new Dimension(280, 35);
@@ -105,6 +111,9 @@ public class ProductRegist extends Page {
 
 		la_download.setPreferredSize(d);
 		bar.setPreferredSize(d);
+		bar.setStringPainted(true);
+		bar.setBackground(Color.white);
+		bar.setForeground(Color.cyan);
 
 		la_preview.setPreferredSize(d);
 		p_preview.setPreferredSize(new Dimension(280, 280));
@@ -165,17 +174,37 @@ public class ProductRegist extends Page {
 					//개발자는 쓰레드로 실행시키고픈 로직을 run()에 작성해 놓으면
 					//jvm이 알아서 호출 해준다..하지만 그러기 위해서는 생성된 쓰레드를
 					//start() 메서드로 Runnable 영역으로 밀어 넣어야 한다
-					@Override
 					public void run() {
+						
 						downLoadFromURL();
+						
+						//이미지 미리보기
+						//preview();
 					}
 				};
 				thread.start();
 				
 			}
 		});
+		
+		//상품등록 버튼에 리스너 연결
+		bt_regist.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regist();
+			}
+		});
 	}
-
+	
+	public void regist() {
+		
+	}
+	
+	//미리보기
+	public void preview() {
+		//패널에게 그림을 다시 그라고 명령하자 repaint() -> update() -> paint()
+		p_preview.repaint();
+	}
+	
 	// 인터넷상의 이미지 주소를 이용하여, 나의 하드디스크에 그 이미지를 저장하자(수집)
 	// 웹서버로부터 정적 자원을 가져오려면, HTTP 프로토콜을 사용해야 한다..
 	// javaSE에서는 HttpURLConnection 객체가 웹상의 요청을 시도할 수 있는 객체로 지원됨.
@@ -204,7 +233,8 @@ public class ProductRegist extends Page {
 			String myName = time + "." + ext;
 
 			fos = new FileOutputStream("C:/Users/gieun/SeShop/" + myName);
-
+			
+			
 			int data = -1;
 			int count = 0; // 몇번 읽어 들이고 있는지 체크하기 위한 카운터
 
@@ -220,10 +250,15 @@ public class ProductRegist extends Page {
 				//너무 빨라서 그래픽 갱신이 눈에 보이지도 못함, 쓰레드로 속도 조절
 				bar.setValue((int)percent);
 				
-				fos.write(data); // 1byte 내려쓰기
-				
+				fos.write(data); // 1byte 내려쓰기				
 			}
-			JOptionPane.showMessageDialog(this, "이미지 수집완료");
+			//p_preview라는 패널을 위해 이미지로 변환
+			ImageIcon icon = new ImageIcon("C:/Users/gieun/SeShop/" + myName);
+			img = icon.getImage();
+			
+			p_preview.repaint();
+			
+			//JOptionPane.showMessageDialog(this, "이미지 수집완료");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
