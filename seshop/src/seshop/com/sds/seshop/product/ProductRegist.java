@@ -43,7 +43,9 @@ public class ProductRegist extends Page {
 	// 따라서 코보박스의 각 아이템의 index와 위치가 일치하는 배열과 같은 존재를 하자
 	// ArrayList
 	ArrayList<Integer> topIdxList = new ArrayList<Integer>();
-
+	
+	Thread thread;// 다운로드 프로그레스 바를 제어할 쓰레드
+	
 	public ProductRegist(ShopMain shopmain) {
 		super(Color.CYAN);
 		this.shopmain = shopmain;
@@ -77,7 +79,9 @@ public class ProductRegist extends Page {
 
 		bar = new JProgressBar();
 		p_preview = new JPanel();
-
+		
+		//쓰레드 생성
+		
 		// 스타일
 		Dimension d = new Dimension(280, 35);
 
@@ -155,8 +159,19 @@ public class ProductRegist extends Page {
 		// 수집 버튼에 리스너 연결
 		bt_collect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				downLoadFromURL();
-
+				
+				// 소모품으로써 쓰레드 한개를 생성함
+				Thread thread = new Thread() {
+					//개발자는 쓰레드로 실행시키고픈 로직을 run()에 작성해 놓으면
+					//jvm이 알아서 호출 해준다..하지만 그러기 위해서는 생성된 쓰레드를
+					//start() 메서드로 Runnable 영역으로 밀어 넣어야 한다
+					@Override
+					public void run() {
+						downLoadFromURL();
+					}
+				};
+				thread.start();
+				
 			}
 		});
 	}
@@ -177,39 +192,52 @@ public class ProductRegist extends Page {
 			urlCon = url.openConnection(); // 이 시점에 고양이가 반응을 할까?
 			httpCon = (HttpURLConnection) urlCon; // 부모자료형에서 자식자료형으로 down Casting
 
+			int total = httpCon.getContentLength(); // 정적 자원의 바이트 용략
+			System.out.println("이미지 크기는 " + total + "bytes");
+
 			// 웹서버에 있는 정적 자원에 대해 스트림을 꽂아버리자!!!
 			is = httpCon.getInputStream();
 
 			// 읽어들인 데이터를 출력시킬 파일 출력스트림 생성
 			long time = System.currentTimeMillis();
 			String ext = FileManager.getExt(t_url.getText());
-			String myName = time+"."+ext;
-			
-			fos = new FileOutputStream("C:/Users/gieun/SeShop/"+myName);
+			String myName = time + "." + ext;
+
+			fos = new FileOutputStream("C:/Users/gieun/SeShop/" + myName);
 
 			int data = -1;
+			int count = 0; // 몇번 읽어 들이고 있는지 체크하기 위한 카운터
 
 			while (true) {
 				data = is.read(); // 스트림으로부터 1 byte 읽어오기
 				if (data == -1)
 					break; // 파일의 끝을 만나면 루프 중단
-				System.out.println(data);
-				fos.write(data); //1byte 내려쓰기
+				// System.out.println(data);
+				count++; //읽을 때마다 증가
+				float percent = (count / (float) total) * 100; //총용량 중, 몇 번째까지 읽었는지 백분율
+				System.out.println((int)percent);
+				
+				//너무 빨라서 그래픽 갱신이 눈에 보이지도 못함, 쓰레드로 속도 조절
+				bar.setValue((int)percent);
+				
+				fos.write(data); // 1byte 내려쓰기
+				
 			}
 			JOptionPane.showMessageDialog(this, "이미지 수집완료");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}finally {
-			if(fos != null) {
+		} finally {
+			if (fos != null) {
 				try {
 					fos.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-		}if(is !=null) {
+		}
+		if (is != null) {
 			try {
 				is.close();
 			} catch (IOException e) {
