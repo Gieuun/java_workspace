@@ -112,8 +112,15 @@ public class ShopMain extends JFrame {
 		// 상품 등록 버튼에 리스너 연결
 		for (int i = 0; i < btn.size(); i++) {
 			btn.get(i).addActionListener(new ActionListener() {
+				
 				public void actionPerformed(ActionEvent e) {
+					int index = btn.indexOf(e.getSource()); 
 					showHide(btn.indexOf(e.getSource()));
+					
+					//상품 목록 버튼이라면 .. 사품 갱신 메서드 호출
+					if(index==PRODUCT_LIST) {
+						getProducList();
+					}
 				}
 			});
 		}
@@ -133,6 +140,14 @@ public class ShopMain extends JFrame {
 				pages[j].setVisible(false); // 조건에 맞지 않으면 false
 			}
 		}
+	}
+
+	public void getProducList() {
+		ProductList productList = (ProductList) pages[PRODUCT_LIST];
+		// 부모의 자료형(page)에서 자식의 자료형(ProductList)으로 다운캐스팅 후 접근
+		productList.getProductList(); // 상품 갱신
+		productList.table.updateUI(); // JTbale 새로고침
+
 	}
 
 	// 지정한 경로의 아이콘을 반환해주는 메서드
