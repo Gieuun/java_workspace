@@ -221,12 +221,9 @@ public class ProductRegist extends Page {
 		bt_list.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shopmain.showHide(shopmain.PRODUCT_LIST);
+				
 				// 이동할때는 갱신된 상품 목록이 보여야 하므로
-				// ProductList 페이지가 보유한 getProductList()호출
-				// shopmain.pages[1]=shopmain.pages[shopmain.PRODUCT_LIST];
-				ProductList productList = (ProductList) shopmain.pages[shopmain.PRODUCT_LIST];
-				// 부모의 자료형(page)에서 자식의 자료형(ProductList)으로 다운캐스팅 후 접근
-				productList.getProductList();// 상품 갱신
+				shopmain.getProducList();
 			}
 		});
 
