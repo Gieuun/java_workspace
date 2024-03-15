@@ -36,7 +36,14 @@ public class ShopMain extends JFrame {
 	// 1)순서가 있는 배열 (List) 2) 순서가 없는 배열 () 3) key : value (Map)
 	ArrayList<JButton> btn = new ArrayList<JButton>();// 버튼을 담을 수 있는 배열
 
-	Page[] pages = new Page[5]; // 모든 페이지를 담게될 배열
+	public Page[] pages = new Page[5]; // 모든 페이지를 담게될 배열
+
+	// 직관성을 위해 의미가 부여된 상수를 활용하자
+	public static final int PRODUCT_REGIST = 0;
+	public static final int PRODUCT_LIST = 1;
+	public static final int ADMIN_LIST = 2;
+	public static final int ADMIN_REGIST = 3;
+	public static final int LOGIN = 4;
 
 	JPanel p_center; // 교체될 페이지들이 붙은 컨테이너(삼품등록, 상품목록, 관리자명단, 관리자등록, 로그인폼)
 
@@ -50,8 +57,8 @@ public class ShopMain extends JFrame {
 
 	public ShopMain() {
 		// 오라클 접속 시도
-		connect(); //접속 시도를 페이지 보다 윗 시점으로 
-		
+		connect(); // 접속 시도를 페이지 보다 윗 시점으로
+
 		p_north = new JPanel();
 
 		Dimension d = new Dimension(70, 60);
@@ -67,13 +74,13 @@ public class ShopMain extends JFrame {
 		// 센터 프레임 생성
 		p_center = new JPanel();
 		p_center.setBackground(Color.gray);
-		
+
 		// 5 페이지 생성
-		pages[0] = new ProductRegist(this);
-		pages[1] = new ProductList(this);
-		pages[2] = new AdminList(this);
-		pages[3] = new AdminRegist(this);
-		pages[4] = new Login(this); // 로그인 객체는 ShopMain 인스턴스 주소값을 원함니다
+		pages[PRODUCT_REGIST] = new ProductRegist(this);
+		pages[PRODUCT_LIST] = new ProductList(this);
+		pages[ADMIN_LIST] = new AdminList(this);
+		pages[ADMIN_REGIST] = new AdminRegist(this);
+		pages[LOGIN] = new Login(this); // 로그인 객체는 ShopMain 인스턴스 주소값을 원함니다
 
 		// 5 페이지를 center에 부착
 		for (int i = 0; i < pages.length; i++) {
