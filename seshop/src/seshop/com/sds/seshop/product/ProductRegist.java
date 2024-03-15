@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
@@ -45,11 +46,15 @@ public class ProductRegist extends Page {
 	// 따라서 코보박스의 각 아이템의 index와 위치가 일치하는 배열과 같은 존재를 하자
 	// ArrayList
 	ArrayList<Integer> topIdxList = new ArrayList<Integer>();
-	
+	ArrayList<Integer> subIdxList = new ArrayList<Integer>();
+
 	Thread thread;// 다운로드 프로그레스 바를 제어할 쓰레드
-	
-	Image img; //미리보기 패널이 그려야할 이미지. 현재는 null
-	
+
+	Image img; // 미리보기 패널이 그려야할 이미지. 현재는 null
+
+	String myName; // 변경한 파일이름을 저장할 변수
+	int subcategory_idx;
+
 	public ProductRegist(ShopMain shopmain) {
 		super(Color.CYAN);
 		this.shopmain = shopmain;
@@ -82,12 +87,12 @@ public class ProductRegist extends Page {
 		bt_list = new JButton("상품 목록");
 
 		bar = new JProgressBar();
-		p_preview  = new JPanel() {
+		p_preview = new JPanel() {
 			public void paint(Graphics g) {
 				g.drawImage(img, 0, 0, 280, 280, container);
 			}
-		}; //페인트 메서드 재정의
-		
+		}; // 페인트 메서드 재정의
+
 		// 스타일
 		Dimension d = new Dimension(280, 35);
 
@@ -165,46 +170,115 @@ public class ProductRegist extends Page {
 			}
 		});
 
+		// 하위 카테고리 콤보 박스와 리스너 연결
+		b_sub.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == e.SELECTED) {
+					// 콤보 박스의 값을 변경할 때마다 subcategory_idx값을
+					// subIdxList의 ArrayList에서 가져오자
+
+					// 콤보박스의 첫번째 칸은 안내 문구이므로, ArrayList에서 가져오지말자
+					int index = b_sub.getSelectedIndex(); // 유저가 선택한콤보 박스의 index
+					if (index > 0) {
+						subcategory_idx = subIdxList.get(index - 1);
+						System.out.println("당신 선택한 하위 카테고리의 pk는" + subcategory_idx);
+					}
+				}
+			}
+		});
+
 		// 수집 버튼에 리스너 연결
 		bt_collect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				// 소모품으로써 쓰레드 한개를 생성함
 				Thread thread = new Thread() {
-					//개발자는 쓰레드로 실행시키고픈 로직을 run()에 작성해 놓으면
-					//jvm이 알아서 호출 해준다..하지만 그러기 위해서는 생성된 쓰레드를
-					//start() 메서드로 Runnable 영역으로 밀어 넣어야 한다
+					// 개발자는 쓰레드로 실행시키고픈 로직을 run()에 작성해 놓으면
+					// jvm이 알아서 호출 해준다..하지만 그러기 위해서는 생성된 쓰레드를
+					// start() 메서드로 Runnable 영역으로 밀어 넣어야 한다
 					public void run() {
-						
+
 						downLoadFromURL();
-						
-						//이미지 미리보기
-						//preview();
+
+						// 이미지 미리보기
+						// preview();
 					}
 				};
 				thread.start();
-				
+
 			}
 		});
-		
-		//상품등록 버튼에 리스너 연결
+
+		// 상품등록 버튼에 리스너 연결
 		bt_regist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				regist();
 			}
 		});
+
+		// 상품 목록 버튼에 리스너 연결
+		bt_list.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				shopmain.showHide(shopmain.PRODUCT_LIST);
+				// 이동할때는 갱신된 상품 목록이 보여야 하므로
+				// ProductList 페이지가 보유한 getProductList()호출
+				// shopmain.pages[1]=shopmain.pages[shopmain.PRODUCT_LIST];
+				ProductList productList = (ProductList) shopmain.pages[shopmain.PRODUCT_LIST];
+				// 부모의 자료형(page)에서 자식의 자료형(ProductList)으로 다운캐스팅 후 접근
+				productList.getProductList();// 상품 갱신
+			}
+		});
+
 	}
-	
+
 	public void regist() {
-		
+		String product_name = t_product_name.getText(); // 상품명
+		int price = Integer.parseInt(t_price.getText()); // 가격
+		String brand = t_brand.getText(); // 브랜드
+		String filename = myName; // 새롭게 다운로드에 의해 생성된 파일명
+
+		// 하위 카테고리 idx값은 멤버변수로 이미 있슴
+
+		String sql = "insert into product(product_idx, product_name, price, brand,filename,subcategory_idx)";
+		sql += " values(seq_product.nextval, '" + product_name + "', " + price + ", '" + brand + "','" + filename
+				+ "', " + subcategory_idx + ")";
+
+		System.out.println(sql);
+
+		// 준비된 쿼리 실행 DmL- executeUpdate() 수행 후 DML에 의해 영향을 받은 record 수 반환
+		// insert 인 경우 1 반환, update - 조건에 맞는 수, delete - 조건에 맞는 수
+		// 셋 모두 0보다는 커야 함 , 따라서 0이 나오면 수행 못햇다는 뜻
+		// , select - executeQuery() :ResultSet
+		PreparedStatement pstmt = null;
+
+		try {
+			pstmt = shopmain.con.prepareStatement(sql); // 쿼리문 준비
+			int result = pstmt.executeUpdate(); // 쿼리 실행
+			if (result < 1) {
+				JOptionPane.showMessageDialog(this, "등록되지 않았습니다 ㅜㅜ");
+			} else {
+				JOptionPane.showMessageDialog(this, "등록 성공 ^.^");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
-	
-	//미리보기
+
+	// 미리보기
 	public void preview() {
-		//패널에게 그림을 다시 그라고 명령하자 repaint() -> update() -> paint()
+		// 패널에게 그림을 다시 그라고 명령하자 repaint() -> update() -> paint()
 		p_preview.repaint();
 	}
-	
+
 	// 인터넷상의 이미지 주소를 이용하여, 나의 하드디스크에 그 이미지를 저장하자(수집)
 	// 웹서버로부터 정적 자원을 가져오려면, HTTP 프로토콜을 사용해야 한다..
 	// javaSE에서는 HttpURLConnection 객체가 웹상의 요청을 시도할 수 있는 객체로 지원됨.
@@ -230,11 +304,10 @@ public class ProductRegist extends Page {
 			// 읽어들인 데이터를 출력시킬 파일 출력스트림 생성
 			long time = System.currentTimeMillis();
 			String ext = FileManager.getExt(t_url.getText());
-			String myName = time + "." + ext;
+			myName = time + "." + ext;
 
 			fos = new FileOutputStream("C:/Users/gieun/SeShop/" + myName);
-			
-			
+
 			int data = -1;
 			int count = 0; // 몇번 읽어 들이고 있는지 체크하기 위한 카운터
 
@@ -243,22 +316,22 @@ public class ProductRegist extends Page {
 				if (data == -1)
 					break; // 파일의 끝을 만나면 루프 중단
 				// System.out.println(data);
-				count++; //읽을 때마다 증가
-				float percent = (count / (float) total) * 100; //총용량 중, 몇 번째까지 읽었는지 백분율
-				System.out.println((int)percent);
-				
-				//너무 빨라서 그래픽 갱신이 눈에 보이지도 못함, 쓰레드로 속도 조절
-				bar.setValue((int)percent);
-				
-				fos.write(data); // 1byte 내려쓰기				
+				count++; // 읽을 때마다 증가
+				float percent = (count / (float) total) * 100; // 총용량 중, 몇 번째까지 읽었는지 백분율
+				System.out.println((int) percent);
+
+				// 너무 빨라서 그래픽 갱신이 눈에 보이지도 못함, 쓰레드로 속도 조절
+				bar.setValue((int) percent);
+
+				fos.write(data); // 1byte 내려쓰기
 			}
-			//p_preview라는 패널을 위해 이미지로 변환
+			// p_preview라는 패널을 위해 이미지로 변환
 			ImageIcon icon = new ImageIcon("C:/Users/gieun/SeShop/" + myName);
 			img = icon.getImage();
-			
+
 			p_preview.repaint();
-			
-			//JOptionPane.showMessageDialog(this, "이미지 수집완료");
+
+			// JOptionPane.showMessageDialog(this, "이미지 수집완료");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -345,12 +418,23 @@ public class ProductRegist extends Page {
 			rs = pstmt.executeQuery(); // 실행 후 표 받기
 
 			// 반복문 돌기전 기존의 아이템이 있다면 모두 삭제 처리
-			b_sub.removeAllItems(); // 모든 아이템 지우기
+			b_sub.removeAllItems(); // 모든 아이템 지우기(화면에서만 제거)
+
+			// 동기화
+			subIdxList.removeAll(subIdxList);// (메모리에서 제거)
+
+			b_sub.addItem("카테고리 선택▼");
 
 			// 반복문으로 next()해 가면서 두번째 콤보 박스에 채우자
 			while (rs.next()) {
+				// 콤보 박스에 데이터 채우기
 				b_sub.addItem(rs.getString("subname"));
+
+				// 콤보 박스와 짝을 이루는 ArrayList에도 데이터 채우기(subcategory_idx)
+				subIdxList.add(rs.getInt("subcategory_idx"));
 			}
+
+			System.out.println("현재까지 쌓인 자식 카테고리의 수" + subcategory_idx);
 		} catch (SQLException e) {
 
 			e.printStackTrace();
